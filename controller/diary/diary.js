@@ -1,23 +1,30 @@
 import Diary from '../../models/diary_schema.js';
 
 const registerFood = async (req, res) => {
-    const {time, foodName, kcal, tan, dan, gi, id, date} = req.body;
-    console.log("단백질",dan)
-    console.log("지방",gi)
-    let register = {
-        time : time,
-        foodName : foodName,
-        kcal : kcal,
-        tan : tan,
-        dan : dan,
-        gi : gi,
-        id : id,
-        date : date
+    console.log("안녕")
+    try{
+        console.log("req : ", req.body)
+        const {time, foodName, kcal, tan, dan, gi, id, date} = req.body;
+        console.log("음식 이름 : ", foodName)
+        let register = {
+            time : time,
+            foodName : foodName,
+            kcal : kcal,
+            tan : tan,
+            dan : dan,
+            gi : gi,
+            id : id,
+            date : date
+        }
+        await Diary.create(register)
+        return res.status(201).json({
+            message : "음식 입력 성공!"
+        })
     }
-    await Diary.create(register)
-    return res.status(201).json({
-        message : "음식 입력 성공!"
-    })
+    catch(error){
+        console.error(error)
+    }
+    
 }
 
 const showFood = async (req, res) => {

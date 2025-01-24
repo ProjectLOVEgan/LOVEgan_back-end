@@ -71,4 +71,15 @@ const jwtStrategy = async (req, res, next) => {
 
 }
 
-export { localStrategy, jwtStrategy}
+const naverStrategy = async (req, res, next) => {
+  try{
+    const naverAuthenticatedUser = req.user;
+    console.log(naverAuthenticatedUser);
+  }
+  catch(error){
+    next(error)
+  }
+}
+
+
+export { localStrategy, jwtStrategy, naverStrategy}

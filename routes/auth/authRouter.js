@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { localStrategy, jwtStrategy } from "../../controller/auth/auth.js";
+import { localStrategy, jwtStrategy, naverStrategy } from "../../controller/auth/auth.js";
 
 
 const authRouter = express.Router();
@@ -11,11 +11,16 @@ authRouter.post("/local", passport.authenticate('local', {session : false}), loc
 authRouter.post("/jwt", passport.authenticate('jwt', {session : false}), jwtStrategy);
 
 // 네이버 로그인
-authRouter.get("/naver", passport.authenticate('naver', { session : false, authType : 'reprompt'}));
-authRouter.get("/naver/callback", passport.authenticate('naver', {session : false, failureRedirect : clientUrl}), (req, res) => {
+authRouter.get("/naver", passport.authenticate('naver', { session : false, authType : 'reprompt'}), naverStrategy);
+authRouter.get("/naver/callback",(req, res, next)=>{
+    console.log("req query : ", req.query);
+    next();
+}
+    , passport.authenticate('naver', {session : false, failureRedirect : clientUrl}), (req, res) => {
     console.log("네이버 로그인 후 유저의 정보", req.user)
     const accessToken = req.user.accessToken;
-    return res.redirect(`${clientUrl}/my?accessToken=${accessToken}`);
+    
+    return res.redirect("http://localhost:3000");
 });
 
 // 구글 로그인
@@ -23,11 +28,10 @@ authRouter.get("/google", passport.authenticate('google', { session : false, sco
 authRouter.get("/google/callback", passport.authenticate('google', { session : false, failureRedirect : clientUrl}), (req, res) => {
     console.log("구글 로그인 후 유저의 정보", req.user)
     const accessToken = req.user.accessToken;
-    return res.redirect(`${clientUrl}/my?accessToken=${accessToken}`);
+    return res.redirect("http://localhost:3000");
 });
 
 export default authRouter;
-
 
 // sns 로그인 후 session에 사용자가 존재하는지 여부를 확인하기
 // authRouter.get('/profile', (req, res)=> {
@@ -36,9 +40,9 @@ export default authRouter;
 //     if(!req.isAuthenticated()){
 //         return res.redirect("/");
 //     }
-//     const {email, name, createAt, phone} = req.user;
+//     const {email, nickname, phone} = req.user;
 //     res.status(200).json({
-//         user : {email, name, createAt, phone},
+//         user : {email, nickname, phone},
 //         isLogin : true,
 //         message : "로그인이 되었습니다."
 //     })

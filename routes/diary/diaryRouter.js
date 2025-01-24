@@ -3,7 +3,10 @@ import { registerFood, showFood, deleteFood } from '../../controller/diary/diary
 
 const diaryRouter = express.Router();
 
-diaryRouter.post("/foodInput", registerFood);
+diaryRouter.post("/foodInput", (req, res, next) => {
+    console.log("요청 도달 ")
+    next();
+}, registerFood);
 diaryRouter.get("/foodInfo", showFood);
 diaryRouter.delete("/deleteFood", deleteFood)
 

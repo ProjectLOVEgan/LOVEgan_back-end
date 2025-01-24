@@ -79,12 +79,12 @@ const JWTVerify = async (jwtPayload, done) => {
 const naverConfig = {
   clientID : process.env.NAVER_ID,
   clientSecret : process.env.NAVER_SECRET,
-  callbackURL : "/auth/naver/callback",
+  callbackURL : "http://localhost:8000/auth/naver/callback",
 }
 
 const naverVerify = async (accessToken, refreshToken, profile, done) => {
   console.log("naver profile", profile)
-  const { id, email, name, profileImage, provider, mobile} = profile;
+  const { id, email, nickname, profileImage, provider, mobile} = profile;
 
   try {
     // 네이버로 로그인했는지, 또는 회원가입 한 적이 있는지 확인
@@ -115,7 +115,7 @@ const naverVerify = async (accessToken, refreshToken, profile, done) => {
     const createdSnsUser = await Sns.create({
       snsId : id,
       email : email,
-      name : name,
+      name : nickname,
       phone : mobile,
       picture : profileImage,
       provider : provider
@@ -123,7 +123,7 @@ const naverVerify = async (accessToken, refreshToken, profile, done) => {
 
     const newUser = await User.create({
       email: createdSnsUser.email,
-      name : name,
+      name : nickname,
       phone : mobile,
       picture : createdSnsUser.picture,
       snsId : createdSnsUser._id
